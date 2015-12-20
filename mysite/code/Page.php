@@ -48,32 +48,36 @@ class Page_Controller extends ContentController {
 	}
 
 	public function ContactForm() {
-        $fields = new FieldList( 
-			new TextField('Name'), 
-			new EmailField('Email'), 
-			new TextareaField('Message')
-        );
+		if ($this->ContactFormDisplay) {
+	        $fields = new FieldList( 
+				new TextField('Name'),
+				new EmailField('Email'),
+				new TextField('Subject', 'Subject', ($this->ContactFormSubject == '') ? '' : $this->ContactFormSubjectgit),
+				new TextareaField('Message')
+	        );
 
-        $actions = new FieldList( 
-			new FormAction('Submit', 'Submit') 
-        );
+	        $actions = new FieldList( 
+				new FormAction('Submit', 'Submit') 
+	        );
 
-        return new Form($this, 'Form', $fields, $actions); 
+	        return new Form($this, 'Form', $fields, $actions);
+	    }
 	}
 
-	public function Submit($data, $form) { 
+	public function Submit($data, $form) {
         $email = new Email(); 
 
-        $email->setTo('siteowner@mysite.com'); 
-        $email->setFrom($data['Email']); 
-        $email->setSubject("Contact Message from {$data["Name"]}"); 
+        $email->setTo('siteowner@mysite.com');
+        $email->setFrom($data['Email']);
+        $email->setSubject("Contact Message from {$data["Name"]}");
 
-        $messageBody = " 
-            <p><strong>Name:</strong> {$data['Name']}</p> 
-            <p><strong>Message:</strong> {$data['Message']}</p> 
+        $messageBody = "
+            <p><strong>Name:</strong> {$data['Name']}</p>
+            <p><strong>Message:</strong> {$data['Message']}</p>
         "; 
-        $email->setBody($messageBody); 
-        $email->send(); 
+        $email->setBody($messageBody);
+        $email->send();
+
         return array(
             'Content' => '<p>Thank you for your feedback.</p>',
             'Form' => ''
